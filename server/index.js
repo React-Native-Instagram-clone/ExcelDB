@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("./config/db");
 const cors = require("cors");
+const nodemailer = require("nodemailer");
 
 const app = express();
 const PORT = 8000;
@@ -15,6 +16,42 @@ app.get("/api/get", (req, res) => {
     res.send(result);
   });
 });
+
+app.get("/email", async (req, res) => {
+  try {
+    // Create a transporter object
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+          user: 'durgeshdwivedi81@gmail.com',
+          pass: 'ykgp disq tfnn vubr'
+      }
+    });
+
+    // Email options
+    const mailOptions = {
+      from: "durgeshdwivedi81@gmail.com", // Use environment variable
+      to: '',
+      cc: '',
+      bcc: '',
+      subject: 'Your Subject',
+      text: 'Hello, this is the body of the email.',
+    };
+
+    // Send email
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+
+    // Send a success response to the client
+    res.status(200).json({ message: 'Email sent successfully' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+
+    // Send an error response to the client
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 app.post("/api/create", (req, res) => {
   const values = req.body.values;
@@ -34,5 +71,5 @@ app.post("/api/create", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
+  console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });
