@@ -2,11 +2,13 @@ const express = require("express");
 const db = require("./config/db");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
+const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = 8000;
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 
 app.get("/api/get", (req, res) => {
   db.query("SELECT * FROM jewelry", (err, result) => {
@@ -17,25 +19,27 @@ app.get("/api/get", (req, res) => {
   });
 });
 
-app.get("/email", async (req, res) => {
+app.post('/email', async (req, res) => {
   try {
+    const { to, cc, bcc, subject, text } = req.body;
+
     // Create a transporter object
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-          user: 'durgeshdwivedi81@gmail.com',
-          pass: 'ykgp disq tfnn vubr'
-      }
+        user: 'durgeshdwivedi81@gmail.com',
+        pass: 'ykgp disq tfnn vubr',
+      },
     });
 
     // Email options
     const mailOptions = {
-      from: "durgeshdwivedi81@gmail.com", // Use environment variable
-      to: '',
-      cc: '',
-      bcc: '',
-      subject: 'Your Subject',
-      text: 'Hello, this is the body of the email.',
+      from: 'durgeshdwivedi81@gmail.com',
+      to,
+      cc,
+      bcc,
+      subject,
+      text,
     };
 
     // Send email
